@@ -26,7 +26,7 @@ $ npm install object-validator-js --save
         function (err, res, body) {
             validator(body,{
                 _id: 'isMongoId', // Validator test
-                active: true, // NonString schema test (doesn't use validtor)
+                active: true, // NonString schema test (doesn't use validator)
                 contact: {
                     first_name: 'isString', // Checks value is typeof string
                     last_name: 'isString', // Checks value is typeof string
@@ -41,16 +41,21 @@ $ npm install object-validator-js --save
                     token: 'isString' // Checks value is typeof string
                 },
                 preferences: { state: { last_emailed: 'isDate' } }, // Validator test
-                timestamps: { created: 'isDate' } // Validator test
+                timestamps: {
+                    created: 'isDate', // Validator test
+                    killed: '~isDate' // Validator test but can be null
+                 }
             });
         });
 ```
 
 ## Addtional Validations
 
-* `isString` in scheam - Returns true is value is `typeof` `string`
+* `isString` in schema - Returns true is value is `typeof` `string`
 * `isBoolean` in Schema - Returns true is value is `typeof` `boolean`
-* `NonString` in schema - Checks value with === comparision;
+* `NonString` in schema - Checks value with === comparison;
+* `!` before `validator method` will give the negative result
+* `~` before `validator method` validates method if data present (optional)
 
 [npm-image]: https://img.shields.io/npm/v/object-validator-js.svg?style=flat
 [npm-url]: https://npmjs.org/package/object-validator-js
