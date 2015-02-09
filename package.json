@@ -1,6 +1,6 @@
 {
   "name": "object-validator-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Using Validator.js to compare a object to a schema.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository" : {
     "type" : "git",
-    "url" : "https://github.com/dazzer13/object-validator.git"
+    "url" : "https://github.com/labithiotis/express-list-routes"
   },
   "keywords": [
     "validator",
