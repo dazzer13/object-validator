@@ -2,7 +2,7 @@
 
 Small wrapper to validate JSON objects with [Validator.js](https://github.com/chriso/validator.js) library.
 
-## validator( OBJECT, SCHEMA );
+### validator( OBJECT, SCHEMA )
 
 
 ```
