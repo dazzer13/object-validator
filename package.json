@@ -1,10 +1,14 @@
 {
-  "name": "object-validator",
+  "name": "object-validator-js",
   "version": "0.0.1",
-  "description": "Using Validator.js to compare a object to a schema",
+  "description": "Using Validator.js to compare a object to a schema.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/dazzer13/object-validator.git"
   },
   "keywords": [
     "validator",
@@ -16,8 +20,8 @@
     "validation"
   ],
   "author": "Darren Labithiotis",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "validator": "^3.28.0"
+    "validator": "^3.x.x"
   }
 }
