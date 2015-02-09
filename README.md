@@ -53,7 +53,7 @@ $ npm install object-validator-js --save
 * `NonString` in schema - Checks value with === comparision;
 
 [npm-image]: https://img.shields.io/npm/v/object-validator-js.svg?style=flat
-[npm-url]: https://npmjs.org/package/object-validator
+[npm-url]: https://npmjs.org/package/object-validator-js
 [downloads-image]: https://img.shields.io/npm/dm/object-validator.svg?style=flat
 [downloads-url]: https://npmjs.org/package/object-validator
 [travis-image]: https://img.shields.io/travis/strongloop/object-validator.svg?style=flat
