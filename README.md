@@ -59,7 +59,7 @@ $ npm install object-validator-js --save
 
 [npm-image]: https://img.shields.io/npm/v/object-validator-js.svg?style=flat
 [npm-url]: https://npmjs.org/package/object-validator-js
-[downloads-image]: https://img.shields.io/npm/dm/object-validator.svg?style=flat
+[downloads-image]: https://img.shields.io/npm/dm/object-validator-js.svg?style=flat
 [downloads-url]: https://npmjs.org/package/object-validator-js
 [travis-image]: https://img.shields.io/travis/strongloop/object-validator-js.svg?style=flat
 [travis-url]: https://travis-ci.org/strongloop/object-validator-js

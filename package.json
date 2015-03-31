@@ -1,6 +1,6 @@
 {
   "name": "object-validator-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Using Validator.js to compare a object to a schema.",
   "main": "index.js",
   "scripts": {
