@@ -1,81 +1,106 @@
-var assert          = require('assert'),
-	validator       = require('validator');
+var validator = require('validator');
 
-module.exports = function(object /* Object */, schema /* Schema */) {
+function get(o, s) {
+  var a = s.replace(/\[(\w+)\]/g, '.$1').replace(/^\./, '').split('.');
+  while (a.length) {
+    var n = a.shift();
+    if (n in o) {
+      o = o[n];
+    } else {
+      return;
+    }
+  }
+  return o;
+}
 
-	if(!object instanceof Object) throw new Error('Object needs to be a JavaScript Object');
-	if(!schema instanceof Object) throw new Error('Schema needs to be a JavaScript Object');
+function hasValidValidatorMethod(method, pathKey) {
+  if (validator[method] == null) {
+    throw new Error(method + ' is not a valid method for validator at: ' + pathKey);
+  }
+}
 
-	var errors = [];
+module.exports = function (object, schema) {
+  var errors;
+  if (!object instanceof Object) throw new Error('Object needs to be a JavaScript Object');
+  if (!schema instanceof Object) throw new Error('Schema needs to be a JavaScript Object');
 
-	object.byString = function(s) {
-		s = s.replace(/\[(\w+)\]/g, '.$1').replace(/^\./, '');
-		var a = s.split('.'),
-			o = this;
-		while (a.length) {
-			var n = a.shift();
-			if (n in o) {
-				o = o[n];
-			} else {
-				return;
-			}
-		}
-		return o;
-	};
+  function forEachKey(schemaObject, path, rootKey) {
 
-	function forEachKey(schemaObject, path, rootKey) {
+    Object.keys(schemaObject).forEach(function (key) {
+      var pathKey = path ? (path + '.' + key) : key;
+      var validatorKey = schemaObject[key];
 
-		Object.keys(schemaObject).forEach(function(key) {
+      if (typeof validatorKey === 'object' && !Array.isArray(validatorKey)) {
+        forEachKey(schemaObject[key], pathKey, key);
+      } else {
 
-			var pathKey = path ? (path + '.' + key) : key;
+        var valid;
 
-			if (schemaObject[ key ] instanceof Object) {
-				forEachKey(schemaObject[ key ], pathKey, key);
-			} else {
-				var valid;
-				if(typeof schemaObject[ key ] != 'string'){
-					valid = schemaObject[ key ] === object.byString(pathKey);
-				} else {
-					var validatorKey = schemaObject[ key ],
-						firstChar = validatorKey.substr(0,1);
+        if (Array.isArray(validatorKey)) {
 
-					if(firstChar === '!' || firstChar === '~') validatorKey = validatorKey.substr(1,validatorKey.length);
+          hasValidValidatorMethod(validatorKey[0], pathKey);
+          valid = validator[validatorKey[0]].apply(validator, [get(object, pathKey)].concat(validatorKey.slice(1)));
 
-					switch(validatorKey){
-						case('isString'):
-							valid = typeof object.byString(pathKey) == 'string';
-							break;
-						case('isBoolean'):
-							valid = typeof object.byString(pathKey) == 'boolean';
-							break;
-						default:
+        } else if (typeof validatorKey !== 'string') {
 
-							if( validator[ validatorKey ] == null ) throw new Error(validatorKey + ' is not a valid method for validator at: ' + pathKey);
+          valid = validatorKey === get(object, pathKey);
 
-							if(firstChar === '~' && object.byString(pathKey) == null ) return;
+        } else {
 
-							valid = validator[ validatorKey ](object.byString(pathKey));
+          var firstChar = validatorKey.substr(0, 1);
+          if (firstChar === '!' || firstChar === '~') {
+            validatorKey = validatorKey.substr(1, validatorKey.length);
+          }
 
-							if (firstChar === '!') valid = !valid;
+          switch (validatorKey) {
+            case('isString'):
+              valid = typeof get(object, pathKey) === 'string';
+              break;
+            case('isBoolean'):
+              valid = typeof get(object, pathKey) === 'boolean';
+              break;
+            case('isNumber'):
+              valid = typeof get(object, pathKey) === 'number';
+              break;
+            case('isObject'):
+              valid = typeof get(object, pathKey) === 'object';
+              break;
+            case('isArray'):
+              valid = Array.isArray(get(object, pathKey));
+              break;
+            case('isFunction'):
+              valid = typeof get(object, pathKey) === 'function';
+              break;
+            default:
 
-					}
-				}
-				if (!valid) errors.push({ validator: schemaObject[key], path: pathKey, value: object.byString(pathKey) });
-			}
+              hasValidValidatorMethod(validatorKey, pathKey);
 
-		}, this);
+              if (firstChar === '~' && get(object, pathKey) == null) {
+                return;
+              }
 
-	}
+              valid = validator[validatorKey](String(get(object, pathKey)));
 
-	forEachKey(schema);
+              if (firstChar === '!') {
+                valid = !valid;
+              }
+          }
+        }
 
-	if (errors.length > 0) {
-		errors.forEach(function(error) {
-			assert.fail(error.value, error.validator, error.path + ' failed ' + error.validator );
-		});
-		return errors;
-	} else {
-		return true;
-	}
+        if (!valid) {
+          errors = errors || [];
+          errors.push({
+            path: pathKey,
+            validator: schemaObject[key],
+            value: get(object, pathKey),
+            message: pathKey + ' failed ' + JSON.stringify(schemaObject[key]) + ' validator test.'
+          });
+        }
+      }
+    });
+  }
 
+  forEachKey(schema);
+
+  return errors;
 };
