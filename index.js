@@ -48,8 +48,13 @@ module.exports = function (object, schema) {
         } else {
 
           var firstChar = validatorKey.substr(0, 1);
+
           if (firstChar === '!' || firstChar === '~') {
             validatorKey = validatorKey.substr(1, validatorKey.length);
+          }
+
+          if (firstChar === '~' && (get(object, pathKey) == null || get(object, pathKey) == undefined)) {
+            return;
           }
 
           switch (validatorKey) {
@@ -72,12 +77,7 @@ module.exports = function (object, schema) {
               valid = typeof get(object, pathKey) === 'function';
               break;
             default:
-
               hasValidValidatorMethod(validatorKey, pathKey);
-
-              if (firstChar === '~' && get(object, pathKey) == null) {
-                return;
-              }
 
               valid = validator[validatorKey](String(get(object, pathKey)));
 
